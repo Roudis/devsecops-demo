@@ -79,12 +79,17 @@ jobs:
     needs: [build]
     env:
       REGISTRY: ghcr.io
+      # Initial value, will be lowercased in steps
       IMAGE_NAME: ${{ github.repository }}
     outputs:
       image_tag: ${{ steps.set_output.outputs.image_tag }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      
+      # FIX: Lowercase the image name for Docker/Trivy compatibility
+      - name: Lowercase Image Name
+        run: echo "IMAGE_NAME=${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
       
       - name: Download build artifacts
         uses: actions/download-artifact@v4
@@ -162,11 +167,13 @@ jobs:
       - name: Update Kubernetes deployment file
         env:
           IMAGE_TAG: sha-${{ github.sha }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
           REGISTRY: ghcr.io
         run: |
+          # FIX: Ensure we use the lowercase repository name here too
+          REPO_NAME=${GITHUB_REPOSITORY,,}
+          
           # Define the new image with tag
-          NEW_IMAGE="${REGISTRY}/${GITHUB_REPOSITORY}:${IMAGE_TAG}"
+          NEW_IMAGE="${REGISTRY}/${REPO_NAME}:${IMAGE_TAG}"
           
           # Update the deployment file directly
           sed -i "s|image: ${REGISTRY}/.*|image: ${NEW_IMAGE}|g" kubernetes/deployment.yaml
