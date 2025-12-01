@@ -18,9 +18,17 @@ export default tseslint.config(
       'react-refresh': reactRefresh,
     },
     rules: {
-      // START OF FIX
-      'no-unused-expressions': 'off', // Disable the base ESLint rule
-      '@typescript-eslint/no-unused-expressions': 'error', // Enable the TypeScript-compatible rule
+      // START OF FIX: This explicitly disables the base rule and provides the options
+      // to the TS rule, resolving the initialization bug.
+      'no-unused-expressions': 'off',
+      '@typescript-eslint/no-unused-expressions': [
+        'error',
+        {
+          allowShortCircuit: true,
+          allowTernary: true,
+          allowTaggedTemplates: true,
+        },
+      ],
       // END OF FIX
 
       ...reactHooks.configs.recommended.rules,
