@@ -18,6 +18,11 @@ export default tseslint.config(
       'react-refresh': reactRefresh,
     },
     rules: {
+      // START OF FIX
+      'no-unused-expressions': 'off', // Disable the base ESLint rule
+      '@typescript-eslint/no-unused-expressions': 'error', // Enable the TypeScript-compatible rule
+      // END OF FIX
+
       ...reactHooks.configs.recommended.rules,
       'react-refresh/only-export-components': [
         'warn',
